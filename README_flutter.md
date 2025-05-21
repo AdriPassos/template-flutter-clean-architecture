@@ -5,11 +5,11 @@ Este repositório fornece uma base sólida para aplicações Flutter estruturada
 
 ## Camadas de Arquitetura
 
-```lib/```
-```├── data/             # Implementações concretas, DTOs e fontes de dados (API, local)```
-```├── domain/           # Entidades puras, interfaces (abstrações) e casos de uso```
-```├── presentation/     # UI, widgets, páginas, controllers (BLoC/Cubit)```
-```├── core/             # Dependências globais, utilitários, constantes, temas, injeção```
+```lib/
+├── data/             # Implementações concretas, DTOs e fontes de dados (API, local)
+├── domain/           # Entidades puras, interfaces (abstrações) e casos de uso
+├── presentation/     # UI, widgets, páginas, controllers (BLoC/Cubit)
+├── core/             # Dependências globais, utilitários, constantes, temas, injeção```
 
 > Cada camada conhece apenas a anterior (ex: presentation denpende de domain, mas nunca de data)
 
