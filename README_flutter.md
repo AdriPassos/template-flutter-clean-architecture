@@ -1,47 +1,75 @@
 
 # Flutter App Base - Clean Architecture
 
-Este repositório serve como base para projetos Flutter utilizando a arquitetura limpa (Clean Architecture), seguindo os padrões definidos pela equipe da Alliance.
+Este repositório fornece uma base sólida para aplicações Flutter estruturadas com Clean Architecture, separando responsabilidades em camadas bem definidas, promovendo testabilidade, escalabilidade e manutenibilidade.
 
-## Estrutura de Pastas
+## Camadas de Arquitetura
 
-- `lib/presentation` — Widgets, páginas, controllers (Bloc/Cubit)
-- `lib/domain` — Entidades e casos de uso
-- `lib/data` — Repositórios e fontes de dados
+`lib/`
+`├── data/             # Implementações concretas, DTOs e fontes de dados (API, local)`
+`├── domain/           # Entidades puras, interfaces (abstrações) e casos de uso`
+`├── presentation/     # UI, widgets, páginas, controllers (BLoC/Cubit)`
+`├── core/             # Dependências globais, utilitários, constantes, temas, injeção`
 
-## Padrões Utilizados
+> Cada camada conhece apenas a anterior (ex: presentation denpende de domain, mas nunca de data)
 
-- Gerenciamento de estado com `flutter_bloc`
-- Modelagem com `Freezed` e `Equatable`
-- Testes com `flutter_test` e `mocktail`
-- Responsividade com `MediaQuery` e `LayoutBuilder`
+## Tecnologias e Padrões Adotados
 
-## Requisitos
+- Gerenciamento de estado: 	flutter_bloc, [Cubit]
+- Modelagem de dados:	Freezed, Equatable
+- Testes:	flutter_test, mocktail
+- DI (Injeção de dependência):	get_it
+- Responsividade:	LayoutBuilder, MediaQuery, Flexible, Expanded
+- Estilo Funcional:	Imutabilidade com Freezed e composição de widgets
+- Análise Estática:	flutter analyze, suporte a lints personalizadas
 
-- Flutter SDK
-- Dart >= 3.x
-- Pacotes: `flutter_bloc`, `freezed`, `equatable`, `get_it`, entre outros
+## Pré Requisitos
 
-## Como iniciar
+- Flutter SDK >= 3.0.0
+- Dart >= 3.0.0
 
-```bash
-flutter pub get
-flutter run
-```
+> Ferramentas como Android Studio, VS Code ou outro IDE com suporte a Flutter
 
-## Convenções
+## Dependências Essenciais
+- dependencies:
+-- flutter_bloc: ^8.x
+-- freezed_annotation: ^2.x
+-- get_it: ^7.x
+-- equatable: ^2.x
 
-- Utilizar `StatelessWidget` por padrão
-- Evitar lógica no `main.dart`
-- Tipar variáveis explicitamente
+- dev_dependencies:
+-- build_runner: ^2.x
+-- freezed: ^2.x
+-- mocktail: ^1.x
+
+- flutter_test:
+-- sdk: flutter
+
+## Como Rodar o Projeto
+
+```flutter pub get          # Instala dependências```
+```flutter run              # Executa o app (dispositivo/emulador padrão)```
+
+## Gerar arquivos com Freezed/JsonSerializable
+
+```flutter pub run build_runner build --delete-conflicting-outputs```
+
+## Boas Práticas
+
+- Utilize StatelessWidget sempre que possível
+- Evite lógica de negócio no main.dart — use init() e get_it
+- Tipagem explícita para variáveis e funções
+- Separe claramente dados, domínio e UI
+- Faça testes unitários para casos de uso e cubits/blocs
+- Use Theme.of(context) para estilo global e evite hardcoded styles
 
 
 ## Docker (opcional)
 
-Este projeto Flutter não costuma ser executado via Docker em produção, mas pode-se usar para builds automatizados.
+Embora o uso de Docker em desenvolvimento Flutter seja raro, ele pode ser útil para pipelines de CI/CD:
 
-```Dockerfile
-# Dockerfile para build Flutter
+```Dockerfile para build automatizado (APK)
+
 FROM cirrusci/flutter:stable
 
 WORKDIR /app
@@ -49,26 +77,48 @@ COPY . .
 
 RUN flutter pub get
 RUN flutter build apk --release
+
+docker build -t flutter_app_build .
+docker run flutter_app_build
 ```
 
 ## GitHub Actions - CI
 
-```yaml
-# .github/workflows/flutter-ci.yml
+```
+# github/workflows/flutter-ci.yml
+
 name: Flutter CI
 
-on: [push, pull_request]
+on:
+  [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: subosito/flutter-action@v2
-      with:
-        flutter-version: 'stable'
-    - run: flutter pub get
-    - run: flutter analyze
-    - run: flutter test
+      - uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Analyze Code
+        run: flutter analyze
+
+      - name: Run Tests
+        run: flutter test
 ```
+
+## Possíveis Extensões Futuras
+
+- Integração com Firebase/Auth/Firestore
+- Suporte a múltiplos temas (dark/light mode com theme_mode)
+- Internacionalização com flutter_localizations
+- Repositório local com hive, shared_preferences ou isar
+- Automação com melos (monorepo)
+- Documentação com Dartdoc
